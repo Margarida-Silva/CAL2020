@@ -1,54 +1,63 @@
-#include <cstdio>
+#include <fstream>
+#include <string>
+#include <sstream>
+#include <stdio.h>
 #include "graphviewer.h"
 
+void drawGraphFromFile(std::string name, unsigned int port);
+
 int main() {
-    GraphViewer *gv = new GraphViewer(600, 600, true, 7772);
-
-    gv->createWindow(600, 600);
-    gv->defineEdgeColor("blue");
-    gv->defineVertexColor("lightGray");
-
-    gv->addNode(0);
-    gv->addNode(1);
-    gv->addNode(2);
-    gv->addEdge(0, 0, 1, EdgeType::UNDIRECTED);
-    gv->addEdge(3, 0, 1, EdgeType::UNDIRECTED);
-    gv->addEdge(1, 0, 2, EdgeType::UNDIRECTED);
-    gv->addEdge(2, 1, 2, EdgeType::DIRECTED);
-
-    gv->setEdgeLabel(0, "Edge number 0");
-    gv->setEdgeColor(1, "yellow");
-    gv->setEdgeThickness(1, 5);
-
-    gv->setVertexColor(0, "green");
-
-    gv->rearrange();
-
-    GraphViewer *gv2 = new GraphViewer(600, 600, true, 7773);
-
-    gv2->createWindow(600, 600);
-    gv2->defineEdgeColor("green");
-    gv2->defineVertexColor("yellow");
-
-    gv2->addNode(0);
-    gv2->addNode(1);
-    gv2->addNode(2);
-    gv2->addEdge(0, 0, 1, EdgeType::UNDIRECTED);
-    gv2->addEdge(3, 0, 1, EdgeType::UNDIRECTED);
-    gv2->addEdge(1, 0, 2, EdgeType::UNDIRECTED);
-    gv2->addEdge(2, 1, 2, EdgeType::DIRECTED);
-
-    gv2->setEdgeLabel(0, "Edge number 0");
-    gv2->setEdgeColor(1, "yellow");
-    gv2->setEdgeThickness(1, 5);
-
-    gv2->setVertexColor(0, "green");
-
-    gv2->rearrange();
-
-
-
+    drawGraphFromFile("random", 7772);
+    drawGraphFromFile("star", 7773);
+    drawGraphFromFile("rainbow", 7774);
     getchar();
 
     return 0;
 }
+
+void drawGraphFromFile(std::string name, unsigned int port){
+    std::ifstream nodes("../resources/graphs/"+name+"/nodes.txt");
+    std::ifstream edges("../resources/graphs/"+name+"/edges.txt");
+    std::ifstream window("../resources/graphs/"+name+"/window.txt");
+    std::string line;
+    std::istringstream iss;
+    unsigned int n_nodes, n_edges, height, width, v1, v2, type, scale, dynamic, thickness;
+    float x, y;
+    char color[20], label[256];
+
+    window >> width >> height >> dynamic >> scale;
+    GraphViewer *gv = new GraphViewer(width, height, dynamic, port);
+    gv->createWindow(width, height);
+
+    // read num of nodes
+    std::getline(nodes, line);
+    iss.str(line);
+    iss >> n_nodes;
+
+    // draw nodes
+    for(int i = 0; i < n_nodes;i++) {
+        std::getline(nodes, line);
+        sscanf( line.c_str(), "(%f, %f, %s ,%s )", &x, &y, color, label);
+        gv->addNode(i , x*scale, y*scale);
+        gv->setVertexColor(i, color);
+        if (label[0] != '-')
+            gv->setVertexLabel(i, label);
+    }
+
+    // read num of edges
+    std::getline(edges, line);
+    sscanf( line.c_str(), "%d", &n_edges);
+
+    //draw edges
+    for(int i = 0; i < n_edges ; i++) {
+        std::getline(edges, line);
+        sscanf( line.c_str(), "(%d, %d, %d, %s ,%d, %s )", &v1, &v2, &type, color, &thickness, label);
+        (type)? gv->addEdge(i, v1, v2, EdgeType::DIRECTED): gv->addEdge(i, v1, v2, EdgeType::UNDIRECTED);
+        gv->setEdgeColor(i, color);
+        gv->setEdgeThickness(i, thickness);
+        if (label[0] != '-')
+            gv->setEdgeLabel(i, label);
+    }
+}
+
+
