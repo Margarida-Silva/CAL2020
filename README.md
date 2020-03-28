@@ -12,4 +12,8 @@
 
 1. Clone / Download this respository
 2. Open CLion > Open > Choose the example dir in the repository
-3. Run the project. You will see three different graphs being loaded
+3. Run the project. You will the following three different graphs being loaded, in different windows
+
+![Random graph](./example/resources/graphs/random/preview.png)
+![Random graph](./example/resources/graphs/star/preview.png)
+![Random graph](./example/resources/graphs/rainbow/preview.png)
