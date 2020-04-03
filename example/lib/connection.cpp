@@ -5,7 +5,7 @@ void myerror(string msg) {
   exit(-1);
 }
 
-Connection::Connection(int port) {
+Connection::Connection(short port) {
 #if defined(__linux__) || defined(__APPLE__)
   struct sockaddr_in echoServAddr; /* Echo server address */
   struct  hostent  *ptrh;
@@ -35,7 +35,7 @@ Connection::Connection(int port) {
 	// Create a socket.
     sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (sock == INVALID_SOCKET) {
-        printf("Client: socket() - Error at socket(): %ld\n", WSAGetLastError());
+        printf("Client: socket() - Error at socket(): %d\n", WSAGetLastError());
         WSACleanup();
     }
 
@@ -66,7 +66,7 @@ string Connection::readLine() {
   char ch;
   while (true) {
     recv(sock, &ch, 1, 0);
-    if (ch == '\n' || ch == '\r')
+    if (ch == '\n')
       break;
     msg.push_back(ch);
   }
