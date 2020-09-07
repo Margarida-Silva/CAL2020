@@ -1,4 +1,4 @@
-# CAL 2020
+# Graph Viewer Demo
 
 ## Setting up the environment
 
